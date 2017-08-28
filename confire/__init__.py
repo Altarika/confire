@@ -17,7 +17,7 @@ A simple app configuration scheme using YAML and class based defaults.
 ## Imports
 ##########################################################################
 
-from .config import Configuration, environ_setting
+from .config import Configuration, environ_setting, path_setting
 from .exceptions import ImproperlyConfigured
 
 ##########################################################################
@@ -27,7 +27,7 @@ from .exceptions import ImproperlyConfigured
 __version_info__ = {
     'major': 0,
     'minor': 2,
-    'micro': 1,
+    'micro': 0,
     'releaselevel': 'final',
     'serial': 0,
 }

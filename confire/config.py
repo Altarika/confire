@@ -43,6 +43,10 @@ import yaml
 import warnings
 
 from copy import deepcopy
+from six import with_metaclass
+
+from .paths import Path
+from .descriptors import SettingsMeta
 from .exceptions import ImproperlyConfigured, ConfigurationMissing
 
 ##########################################################################
@@ -69,10 +73,30 @@ def environ_setting(name, default=None, required=True):
     return os.environ.get(name, default)
 
 ##########################################################################
+## Paths helper function
+##########################################################################
+
+def path_setting(**kwargs):
+    """
+    Helper function to enable the configuration of paths on the local file
+    system. By default, this function manages strings in the YAML file:
+
+        1. Expand user (e.g. ~)
+        2. Expand vars (e.g. $HOME)
+        3. Normalize the path (e.g. .. and . resolution)
+        4. If absolute, return the absolute path
+
+    If mkdirs is True, then this function will create the directory if it
+    does not exist. If raises is True, then it will raise an exception if the
+    directory does not exist.
+    """
+    return Path(**kwargs)
+
+##########################################################################
 ## Configuration Base Class
 ##########################################################################
 
-class Configuration(object):
+class Configuration(with_metaclass(SettingsMeta, object)):
     """
     Base configuration class specifies how configurations should be
     handled and provides helper methods for iterating through options and
@@ -138,7 +162,7 @@ class Configuration(object):
             if isinstance(opt, Configuration):
                 opt.configure(value)
             else:
-                self.__dict__[key] = value
+                setattr(self, key, value)
 
     def options(self):
         """
