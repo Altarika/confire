@@ -17,7 +17,8 @@ Setup script for confire
 ##########################################################################
 ## Imports
 ##########################################################################
-
+import os
+import codecs
 try:
     from setuptools import setup
     from setuptools import find_packages
@@ -29,7 +30,29 @@ except ImportError:
 ## Package Information
 ##########################################################################
 
-version  = __import__('confire').__version__
+PROJECT = os.path.abspath(os.path.dirname(__file__))
+VERSION_PATH = os.path.join('confire', "version.py")
+
+def read(*parts):
+    """
+    Assume UTF-8 encoding and return the contents of the file located at the
+    absolute path from the REPOSITORY joined with *parts.
+    """
+    with codecs.open(os.path.join(PROJECT, *parts),
+                     'rb', 'utf-8') as source_file:
+        return source_file.read()
+
+
+def get_version(path=VERSION_PATH):
+    """
+    Reads the __init__.py defined in the VERSION_PATH to find the get_version
+    function, and executes it to ensure that it is loaded correctly.
+    """
+    namespace = {}
+    exec(read(path), namespace)
+    return namespace['get_version']()
+
+version  = get_version()
 
 ## Discover the packages
 packages = find_packages(where=".", exclude=("tests", "bin", "docs", "fixtures", "register",))
